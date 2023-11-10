@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.jw.mapper.ScoreMapper">
+
+    <resultMap type="Score" id="ScoreResult">
+        <result property="id" column="id"/>
+        <result property="courseId" column="course_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="score" column="score"/>
+        <result property="status" column="status"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectScoreVo">
+        select id,
+               course_id,
+               user_id,
+               score,
+               status,
+               del_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark
+        from jw_score
+    </sql>
+
+    <select id="selectScoreList" parameterType="Score" resultType="com.ruoyi.jw.vo.ScoreVo">
+        select t1.*, t2.nick_name as nickName, t3.course_name as courseName
+        from jw_score t1
+        left join sys_user t2 on t1.user_id = t2.user_id
+        left join jw_course t3 on t1.course_id = t3.id
+        left join sys_dept t4 on t2.dept_id = t4.dept_id
+        <where>
+            <if test="courseId != null ">and t1.course_id = #{courseId}</if>
+            <if test="userId != null ">and t1.user_id = #{userId}</if>
+            <if test="score != null ">and t1.score = #{score}</if>
+            and t3.status = 0
+            ${params.dataScope}
+        </where>
+
+    </select>
+
+    <select id="selectScoreById" parameterType="Long" resultMap="ScoreResult">
+        <include refid="selectScoreVo"/>
+        where id = #{id}
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from jw_score where del_flag != 1 and status = 0;
+    </select>
+
+    <insert id="insertScore" parameterType="Score" useGeneratedKeys="true" keyProperty="id">
+        insert into jw_score
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="courseId != null">course_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="score != null">score,</if>
+            <if test="status != null">status,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="courseId != null">#{courseId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="score != null">#{score},</if>
+            <if test="status != null">#{status},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateScore" parameterType="Score">
+        update jw_score
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="courseId != null">course_id = #{courseId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteScoreById" parameterType="Long">
+        delete
+        from jw_score
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteScoreByIds" parameterType="String">
+        delete from jw_score where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
