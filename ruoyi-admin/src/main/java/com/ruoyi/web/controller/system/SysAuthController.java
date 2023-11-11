@@ -98,6 +98,7 @@ public class SysAuthController extends BaseController
     @GetMapping("/social-login/{source}")
     public AjaxResult socialLogin(@PathVariable("source") String source, AuthCallback callback, HttpServletRequest request)
     {
+        System.out.println("接口被调用");
         String obj = auths.get(source);
         if (StringUtils.isEmpty(obj))
         {
